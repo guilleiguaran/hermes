@@ -4,7 +4,7 @@
 #In production, the app can be accessed through 2 different hosts: thepochisuperstarmegashow.com and exmaple.com. There then needs a 2-key hash. If you deployed to one host, only the API key would be needed (as in development and test).
 
 development:
- hermes.local: ABQIAAAAKYTq1Qk7WEVHwv6iojWv3BTK6BQdD3RnE_RTVOWHDyb4dhfy5BTP-2f7H1dq1WOFme011HF-qNvK1A
+ ABQIAAAAKYTq1Qk7WEVHwv6iojWv3BTK6BQdD3RnE_RTVOWHDyb4dhfy5BTP-2f7H1dq1WOFme011HF-qNvK1A
 
 test:
  ABQIAAAAzMUFFnT9uH0xq39J0Y4kbhTJQa0g3IQ9GZqIMmInSLzwtGDKaBR6j135zrztfTGVOm2QlWnkaidDIQ
