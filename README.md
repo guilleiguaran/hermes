@@ -8,6 +8,10 @@ Hermes is the great messenger of the gods in Greek mythology and additionally as
 
 To run the project you will need PostgreSQL and PostGIS extension in your system, you can look in internet for guides like this for <a href="http://techblog.strange-quark.com/gis/postgis-installation">Ubuntu Linux</a>, or this for <a href="http://www.lincolnritter.com/blog/2007/12/04/installing-postgresql-postgis-and-more-on-os-x-leopard/">Mac OSX</a>
 
+You will need postgresql library for Ruby:
+
+   $ sudo gem install postgresql
+
 ## Initial Config
 
 You can run the server locally:
