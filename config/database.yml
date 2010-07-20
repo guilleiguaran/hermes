@@ -12,8 +12,9 @@ development:
   adapter: postgresql
   encoding: unicode
   database: hermes_development
+  template: template_postgis
   pool: 5
-  username: hermes
+  username: root
   password:
 
   # Connect on a TCP socket. Omitted by default since the client uses a
@@ -38,14 +39,16 @@ test:
   adapter: postgresql
   encoding: unicode
   database: hermes_test
+  template: template_postgis
   pool: 5
-  username: hermes
+  username: root
   password:
 
 production:
   adapter: postgresql
   encoding: unicode
-  database: hermes_production
+  database: hermes
+  template: template_postgis
   pool: 5
-  username: hermes
+  username: root
   password:
