@@ -18,6 +18,10 @@ class RoutesController < ApplicationController
     @end_lat = "10.998996" ; @end_lon = "-74.813118"
   end
   
+  def create
+    
+  end
+  
   
   
 end
