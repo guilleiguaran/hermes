@@ -17,6 +17,10 @@ class Hermes < Sinatra::Application
     erb :index
   end
   
+  get '/route' do
+    
+  end
+  
   get '/test_query' do
     res = @@pgconn.exec "SELECT gid, id, length from roads LIMIT 10;"
     res.result.inspect
