@@ -18,9 +18,17 @@ class Hermes < Sinatra::Application
   end
   
   get '/route' do
-		startId = params['startId']
-		goalId = params['goalId']
-		if(startId != nil && goalId != nil)
+		startLat = params['startLat']
+		startLon = params['startLon']
+
+		goalLat = params['goalLat']
+		goalLon = params['goalLon']
+
+		if(startLat != nil && goalLat != nil && startLon != nil && goalLon != nil)
+
+			startId = closest_node(startLat,startLon)[0]
+			goalId = closest_node(goalLat,goalLon)[0]
+
 			res = @@pgconn.exec "SELECT vertex_id, cost FROM shortest_path('
 		SELECT gid as id, 
 			 source::integer, 
@@ -42,16 +50,10 @@ class Hermes < Sinatra::Application
 		end		
   end
   
-  get '/closest_node' do
-		lat = params['Lat'] 
-		lon = params['Lon']
-		if(lat != nil && lon != nil)
+	def closest_node(lat,lon)
 			res = @@pgconn.exec "SELECT id,ST_AsText(the_geom) FROM vertices_tmp ORDER BY ST_Distance(the_geom, GeomFromText('POINT(#{lat} #{lon})', 21892)) LIMIT 1; "
-			res.result[0].inspect
-		else
-			"Params missing"
-		end
-  end  
+			res.result[0]
+	end
 
   get '/test_query' do
     res = @@pgconn.exec "SELECT gid, id, length from roads LIMIT 10;"
