@@ -1,12 +1,12 @@
 development:
     db_host: localhost
-    db_user: root
-    db_pass:
-    db_name: hermes_development
+    db_user: lacho
+    db_pass: abc123
+    db_name: Hermes
     gmaps_key:
 production:
     db_host: localhost
-    db_user: root
-    db_pass:
-    db_name: hermes_development
+    db_user: lacho
+    db_pass: abc123
+    db_name: Hermes
     gmaps_key:
