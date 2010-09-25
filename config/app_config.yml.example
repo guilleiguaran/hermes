@@ -1,0 +1,12 @@
+development:
+    db_host: localhost
+    db_user: root
+    db_pass:
+    db_name: hermes_development
+    gmaps_key:
+production:
+    db_host: localhost
+    db_user: root
+    db_pass:
+    db_name: hermes_development
+    gmaps_key:

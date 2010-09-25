@@ -1,63 +1,61 @@
 require "erb"
 
 class Hermes < Sinatra::Application
-  @@pgconn = PGconn.connect "localhost", 5432, "", "", "Hermes", "lacho", "abc123"
-  
+  AppConfig = YAML.load_file(File.join(Dir.pwd, 'config','app_config.yml'))[ENV['RACK_ENV']]
+  @@pgconn = PGconn.connect(AppConfig['db_host'], AppConfig['db_port'], "", "", 
+                            AppConfig['db_name'], AppConfig['db_user'], AppConfig['db_pass'])
+
   configure do
     set :views, "#{File.dirname(__FILE__)}/views"
     set :public, "#{File.dirname(__FILE__)}/public"
   end
-  
+
   before do
     puts '[Params]'
     p params
   end
-  
+
   get '/' do
     erb :index
   end
-  
+
   get '/route' do
-		startLat = params['startLat']
-		startLon = params['startLon']
+    start_lat = params['start_lat']
+    start_lon = params['start_lon']
 
-		goalLat = params['goalLat']
-		goalLon = params['goalLon']
+    goal_lat = params['goal_lat']
+    goal_lon = params['goal_lon']
 
-		if(startLat != nil && goalLat != nil && startLon != nil && goalLon != nil)
+    if start_lat && goal_lat && start_lon && goal_lon
 
-			startId = closest_node(startLat,startLon)[0]
-			goalId = closest_node(goalLat,goalLon)[0]
+      start_id = closest_node(start_lat,start_lon)[0]
+      goal_id = closest_node(goal_lat,goal_lon)[0]
 
-			res = @@pgconn.exec "SELECT vertex_id, cost FROM shortest_path('
-		SELECT gid as id, 
-			 source::integer, 
-			 target::integer, 
-			 cost::double precision,
-			 reverse_cost::double precision  
-			FROM roads', 
-		#{startId}, #{goalId}, true, true);"
-			indices = res.result
-			ruta = Array.new			
-			indices.each do |fila|
-				id = fila[0]
-				res = @@pgconn.exec "SELECT ST_AsText(the_geom) as texto FROM vertices_tmp WHERE id = #{id};"
-				ruta << res.result[0][0]
-			end		
-			ruta.inspect
-		else
-			"Params missing"
-		end		
+      res = @@pgconn.exec("SELECT vertex_id, cost FROM shortest_path('
+              SELECT gid as id, 
+                     source::integer, 
+                     target::integer, 
+                     cost::double precision,
+                     reverse_cost::double precision  
+                     FROM roads', 
+                     #{start_id}, #{goal_id}, true, true);")
+      
+      indices = res.result
+      ruta = []		
+      indices.each do |fila|
+        id = fila[0]
+        res = @@pgconn.exec "SELECT ST_AsText(the_geom) as texto FROM vertices_tmp WHERE id = #{id};"
+        ruta << res.result[0][0]
+      end		
+      ruta.to_json
+    else
+      "Params missing"
+    end		
   end
-  
-	def closest_node(lat,lon)
-			res = @@pgconn.exec "SELECT id,ST_AsText(the_geom) FROM vertices_tmp ORDER BY ST_Distance(the_geom, GeomFromText('POINT(#{lat} #{lon})', 21892)) LIMIT 1; "
-			res.result[0]
-	end
 
-  get '/test_query' do
-    res = @@pgconn.exec "SELECT gid, id, length from roads LIMIT 10;"
-    res.result.inspect
+  def closest_node(lat, lon)
+    res = @@pgconn.exec "SELECT id,ST_AsText(the_geom) FROM vertices_tmp ORDER BY ST_Distance(the_geom, GeomFromText('POINT(#{lat} #{lon})', 21892)) LIMIT 1;"
+    res.result[0]
   end
-  
+
 end
