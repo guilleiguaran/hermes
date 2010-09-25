@@ -41,12 +41,15 @@ function calculateRoute(startCoord, endCoord) {
 	
 	var route = new Array();
 	
-	$.getJSON("/test_route?start_lat="+startLat+"&start_lon="+startLon+"&end_lat="+endLat+"&end_lon="+endLon, function(data) {
+	$.getJSON("/route?start_lat="+startLat+"&start_lon="+startLon+"&end_lat="+endLat+"&end_lon="+endLon, function(data) {
 	  	$.each(data, function(i, coord){
+			
 			var latlng = new google.maps.LatLng(coord[0], coord[1]);
 			route.push(latlng);
 		});
+
 		
+
 		if(window.routePath != null)
 		{
 			window.routePath.setMap(null);

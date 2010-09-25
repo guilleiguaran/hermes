@@ -2,8 +2,9 @@ require "erb"
 
 class Hermes < Sinatra::Application
   AppConfig = YAML.load_file(File.join(Dir.pwd, 'config','app_config.yml'))
-  @@pgconn = PGconn.connect(AppConfig['db_host'], AppConfig['db_port'], "", "", 
-                            AppConfig['db_name'], AppConfig['db_user'], AppConfig['db_pass'])
+  
+  @@pgconn = PGconn.connect("localhost", 5432, "", "", 
+                            "Hermes", "lacho", "abc123")
 
   configure do
     set :views, "#{File.dirname(__FILE__)}/views"
@@ -23,13 +24,17 @@ class Hermes < Sinatra::Application
     start_lat = params['start_lat']
     start_lon = params['start_lon']
 
-    goal_lat = params['goal_lat']
-    goal_lon = params['goal_lon']
+    goal_lat = params['end_lat']
+    goal_lon = params['end_lon']
 
     if start_lat && goal_lat && start_lon && goal_lon
 
       start_id = closest_node(start_lat,start_lon)[0]
       goal_id = closest_node(goal_lat,goal_lon)[0]
+
+			puts start_id
+
+			puts goal_id
 
       res = @@pgconn.exec("SELECT vertex_id, cost FROM shortest_path('
               SELECT gid as id, 
@@ -41,11 +46,14 @@ class Hermes < Sinatra::Application
                      #{start_id}, #{goal_id}, true, true);")
       
       indices = res.result
+      
       ruta = []		
       indices.each do |fila|
         id = fila[0]
         res = @@pgconn.exec "SELECT ST_AsText(the_geom) as texto FROM vertices_tmp WHERE id = #{id};"
-        ruta << res.result[0][0]
+	coord = [ res.result[0][0].gsub("POINT(","").gsub(")","").split(" ")[1].to_f,
+                  res.result[0][0].gsub("POINT(","").gsub(")","").split(" ")[0].to_f ]
+        ruta << coord
       end		
       ruta.to_json
     else
@@ -64,7 +72,7 @@ class Hermes < Sinatra::Application
   end
 
   def closest_node(lat, lon)
-    res = @@pgconn.exec "SELECT id,ST_AsText(the_geom) FROM vertices_tmp ORDER BY ST_Distance(the_geom, GeomFromText('POINT(#{lat} #{lon})', 21892)) LIMIT 1;"
+    res = @@pgconn.exec "SELECT id,ST_AsText(the_geom) FROM vertices_tmp ORDER BY ST_Distance(the_geom, GeomFromText('POINT(#{lon} #{lat})', 21892)) LIMIT 1;"
     res.result[0]
   end
 
