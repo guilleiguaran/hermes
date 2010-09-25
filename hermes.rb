@@ -1,7 +1,7 @@
 require "erb"
 
 class Hermes < Sinatra::Application
-  AppConfig = YAML.load_file(File.join(Dir.pwd, 'config','app_config.yml'))[ENV['RACK_ENV']]
+  AppConfig = YAML.load_file(File.join(Dir.pwd, 'config','app_config.yml'))
   @@pgconn = PGconn.connect(AppConfig['db_host'], AppConfig['db_port'], "", "", 
                             AppConfig['db_name'], AppConfig['db_user'], AppConfig['db_pass'])
 
@@ -51,6 +51,16 @@ class Hermes < Sinatra::Application
     else
       "Params missing"
     end		
+  end
+  
+  get '/test_route' do
+    start_lat = params[:start_lat]
+    start_lon = params[:start_lon]
+    end_lat = params[:end_lat]
+    end_lon = params[:end_lon]
+    
+    route = [ [start_lat.to_f,start_lon.to_f], [end_lat.to_f, end_lon.to_f] ]
+    route.to_json
   end
 
   def closest_node(lat, lon)
