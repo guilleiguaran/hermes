@@ -2,6 +2,7 @@ GEM
   remote: http://rubygems.org/
   specs:
     haml (3.0.18)
+    json_pure (1.4.6)
     postgres (0.7.9.2008.01.28)
     rack (1.2.1)
     sinatra (1.0)
@@ -15,6 +16,7 @@ PLATFORMS
 DEPENDENCIES
   bundler
   haml
+  json_pure
   postgres
   sinatra
   unicorn
