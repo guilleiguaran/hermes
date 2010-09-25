@@ -3,8 +3,8 @@ require "erb"
 class Hermes < Sinatra::Application
   AppConfig = YAML.load_file(File.join(Dir.pwd, 'config','app_config.yml'))
   
-  @@pgconn = PGconn.connect("localhost", 5432, "", "", 
-                            "Hermes", "lacho", "abc123")
+  @@pgconn = PGconn.connect(AppConfig['db_host'], AppConfig['db_port'], "", "",
+                            AppConfig['db_name'], AppConfig['db_user'], AppConfig['db_pass'])
 
   configure do
     set :views, "#{File.dirname(__FILE__)}/views"
@@ -32,10 +32,6 @@ class Hermes < Sinatra::Application
       start_id = closest_node(start_lat,start_lon)[0]
       goal_id = closest_node(goal_lat,goal_lon)[0]
 
-			puts start_id
-
-			puts goal_id
-
       res = @@pgconn.exec("SELECT vertex_id, cost FROM shortest_path('
               SELECT gid as id, 
                      source::integer, 
@@ -51,7 +47,7 @@ class Hermes < Sinatra::Application
       indices.each do |fila|
         id = fila[0]
         res = @@pgconn.exec "SELECT ST_AsText(the_geom) as texto FROM vertices_tmp WHERE id = #{id};"
-	coord = [ res.result[0][0].gsub("POINT(","").gsub(")","").split(" ")[1].to_f,
+	      coord = [ res.result[0][0].gsub("POINT(","").gsub(")","").split(" ")[1].to_f,
                   res.result[0][0].gsub("POINT(","").gsub(")","").split(" ")[0].to_f ]
         ruta << coord
       end		
