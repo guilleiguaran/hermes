@@ -32,7 +32,10 @@ class Hermes < Sinatra::Application
       start_id = closest_node(start_lat,start_lon)[0]
       goal_id = closest_node(goal_lat,goal_lon)[0]
 
-      res = @@pgconn.exec("SELECT ST_AsText(the_geom) FROM dijkstra_sp_directed('roads', #{start_id}, #{goal_id},true,true) ORDER BY id DESC;")
+   #   res = @@pgconn.exec("SELECT ST_AsText(the_geom) FROM dijkstra_sp_directed('roads', #{start_id}, #{goal_id},true,true) ORDER BY id DESC;")
+     
+      res = @@pgconn.exec("SELECT ST_AsText(the_geom) FROM shortest_path('SELECT gid as id, source, target, cost, reverse_cost FROM roads',#{start_id}, #{goal_id},true,true) as sp, roads WHERE gid = edge_id;");
+
       rows = res.result.inspect.gsub("[[","").gsub("]]","").split("], [")
       ruta = []
       rows.each do |row|

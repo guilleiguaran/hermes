@@ -57,7 +57,7 @@ function calculateRoute(startCoord, endCoord) {
 	var route = new Array();
 	
 	$.getJSON("/route?start_lat="+startLat+"&start_lon="+startLon+"&end_lat="+endLat+"&end_lon="+endLon, function(data) {
-		console.log(data);
+		
 	  	$.each(data, function(i, polyline_data){
 			var polyline = new Array();
 			$.each(polyline_data, function(j, coord){
