@@ -60,45 +60,45 @@ function initialize() {
 }
 
 function calculateRoute(startCoord, endCoord) {
-  var coords, data_length, p, j, i, n, k, datai;
   var startLat = startCoord.lat();
   var startLon = startCoord.lng();
   var endLat = endCoord.lat();
   var endLon = endCoord.lng();
 
   loading.className = "loading-visible";
-  var route = new Array();
-  jx.load("/route?start_lat="+startLat+"&start_lon="+startLon+"&end_lat="+endLat+"&end_lon="+endLon, function(data) {
-    i = data.length;
-    while(i--){
-      coords = new google.maps.MVCArray();
-      datai = data[i];
-      n = datai.length - 1;
-      j = n;
-      while(j--){
-        k = n - j;
-        coords.insertAt(k, new google.maps.LatLng(datai[k][0], datai[k][1]));
-      }
-      p = new google.maps.Polyline({
-        path: coords,
-        strokeColor: "#6633FF",
-        strokeOpacity: 0.6,
-        strokeWeight: 3
-      });
-      p.setMap(map);
-      route.push(p);
-    }
-    if(routePath != null)
-    {
-      i = routePath.length;
-      while(i--)
-      {
-        routePath[i].setMap(null);
-      }
-    }
-    routePath = route;
+  jx.load("/route?start_lat="+startLat+"&start_lon="+startLon+"&end_lat="+endLat+"&end_lon="+endLon, displayRoute,'json');
+}
 
-    loading.className = "loading-invisible";
-  },'json');
-  
+function displayRoute(data)
+{
+  var coords, data_length, p, j, i, n, k, datai;
+  var route = new Array();
+  i = data.length;
+  while(i--){
+    coords = new google.maps.MVCArray();
+    datai = data[i];
+    n = datai.length;
+    j = n;
+    while(j--){
+      k = n - j - 1;
+      coords.insertAt(k, new google.maps.LatLng(datai[k][0], datai[k][1]));
+    }
+    p = new google.maps.Polyline({
+      path: coords,
+      strokeColor: "#6633FF",
+      strokeOpacity: 0.6,
+      strokeWeight: 3
+    });
+    p.setMap(map);
+    route.push(p);
+  }
+  if(routePath != null){
+    i = routePath.length;
+    while(i--){
+      routePath[i].setMap(null);
+    }
+  }
+  routePath = route;
+
+  loading.className = "loading-invisible";
 }
