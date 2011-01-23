@@ -2,9 +2,9 @@ require "erb"
 
 class Hermes < Sinatra::Application
   AppConfig = YAML.load_file(File.join(Dir.pwd, 'config','app_config.yml'))
-  
+
   @@pgconn = PGconn.connect(AppConfig['db_host'], AppConfig['db_port'], "", "",
-                            AppConfig['db_name'], AppConfig['db_user'], AppConfig['db_pass'])
+  AppConfig['db_name'], AppConfig['db_user'], AppConfig['db_pass'])
 
   configure do
     set :views, "#{File.dirname(__FILE__)}/views"
@@ -31,20 +31,20 @@ class Hermes < Sinatra::Application
       rows = res.result.inspect.gsub("[[","").gsub("]]","").split("], [")
       route = []
       rows.each do |row|
-	      multiline = []
+        multiline = []
         points = row.gsub("MULTILINESTRING((","").gsub("))","").split(",")
-	      points.each do |point|
-		      coord = [point.split(" ")[1].gsub("\"","").to_f, point.split(" ")[0].gsub("\"","").to_f]
-		      multiline << coord	
-	      end
-	      route << multiline
+        points.each do |point|
+          coord = [point.split(" ")[1].gsub("\"","").to_f, point.split(" ")[0].gsub("\"","").to_f]
+          multiline << coord	
+        end
+        route << multiline
       end
-	    route.to_json
+      route.to_json
     else
       "Params missing"
     end		
   end
-  
+
   def closest_node(lat, lon)
     res = @@pgconn.exec "SELECT id,ST_AsText(the_geom) FROM vertices_tmp ORDER BY ST_Distance(the_geom, GeomFromText('POINT(#{lon} #{lat})', 21892)) LIMIT 1;"
     res.result[0]
