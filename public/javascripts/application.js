@@ -54,9 +54,7 @@ function initialize() {
       calculateRoute(startMarker.getPosition(), endMarker.getPosition());
     });
   }
-  
   calculateRoute(startMarker.getPosition(), endMarker.getPosition());
-
 }
 
 function calculateRoute(startCoord, endCoord) {
@@ -64,13 +62,11 @@ function calculateRoute(startCoord, endCoord) {
   var startLon = startCoord.lng();
   var endLat = endCoord.lat();
   var endLon = endCoord.lng();
-
   loading.className = "loading-visible";
   jx.load("/route?start_lat="+startLat+"&start_lon="+startLon+"&end_lat="+endLat+"&end_lon="+endLon, displayRoute,'json');
 }
 
-function displayRoute(data)
-{
+function displayRoute(data) {
   var coords, data_length, p, j, i, n, k, datai;
   var route = new Array();
   i = data.length;
