@@ -26,7 +26,8 @@ div.loading-visible {
 	z-index: 2;
 }
 
-div.loading-visible img {
+div.loading-visible p {
 	margin-top: 200px;
 	vertical-align:middle;
+	color: white;
 }

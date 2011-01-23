@@ -1,7 +1,9 @@
 var map;
 var routePath = null;
+var loading;
 
 function initialize() {
+  loading = document.getElementById("loading");
   var center = new google.maps.LatLng(10.9720, -74.7992);
   var options = {
     zoom: 13,
@@ -40,8 +42,6 @@ function initialize() {
     calculateRoute(startMarker.getPosition(), endMarker.getPosition());
   });
 
-  calculateRoute(startMarker.getPosition(), endMarker.getPosition());
-
   var userAgent = navigator.userAgent.toLowerCase();
 
   if(navigator.geolocation) {
@@ -54,45 +54,51 @@ function initialize() {
       calculateRoute(startMarker.getPosition(), endMarker.getPosition());
     });
   }
+  
+  calculateRoute(startMarker.getPosition(), endMarker.getPosition());
 
 }
 
 function calculateRoute(startCoord, endCoord) {
+  var coords, data_length, p, j, i, n, k, datai;
   var startLat = startCoord.lat();
   var startLon = startCoord.lng();
   var endLat = endCoord.lat();
   var endLon = endCoord.lng();
 
-  //$("#loading").addClass("loading-visible");
-  document.getElementById("loading").className = "loading-visible";
+  loading.className = "loading-visible";
   var route = new Array();
   jx.load("/route?start_lat="+startLat+"&start_lon="+startLon+"&end_lat="+endLat+"&end_lon="+endLon, function(data) {
-
-    for(var i = 0; i < data.length; i++){
-      var coords = new google.maps.MVCArray();
-      for(var j = 0; j < data[i].length; j++)
-      {
-        coords.insertAt(i, new google.maps.LatLng(data[i][j][0], data[i][j][1]))
+    i = data.length;
+    while(i--){
+      coords = new google.maps.MVCArray();
+      datai = data[i];
+      n = datai.length - 1;
+      j = n;
+      while(j--){
+        k = n - j;
+        coords.insertAt(k, new google.maps.LatLng(datai[k][0], datai[k][1]));
       }
-      var p = new google.maps.Polyline({
+      p = new google.maps.Polyline({
         path: coords,
         strokeColor: "#6633FF",
-        strokeOpacity: 0.60,
+        strokeOpacity: 0.6,
         strokeWeight: 3
       });
       p.setMap(map);
       route.push(p);
     }
-    if (routePath != null)
+    if(routePath != null)
     {
-      for(var i = 0; i < routePath.length; i++)
+      i = routePath.length;
+      while(i--)
       {
         routePath[i].setMap(null);
       }
     }
     routePath = route;
 
-    //$("#loading").removeClass("loading-visible");
-    },'json');
-    document.getElementById("loading").className = "loading-invisible";
-  }
+    loading.className = "loading-invisible";
+  },'json');
+  
+}
